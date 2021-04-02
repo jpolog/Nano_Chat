@@ -36,18 +36,18 @@ public class SendRoomList extends NCMessage {
 		
 		StringBuffer sb = new StringBuffer();
 		
-		sb.append("<"+MESSAGE_MARK+">");
-		sb.append("<"+OPERATION_MARK+">"+this.opcode+"</"+OPERATION_MARK+">");
+		sb.append("<"+MESSAGE_MARK+">"+END_LINE);
+		sb.append("<"+OPERATION_MARK+">"+this.opcode+"</"+OPERATION_MARK+">"+END_LINE);
 		for(NCRoomDescription room : this.descRoomList) {
-			sb.append("<"+ROOM_MARK+">"+room.roomName+"</"+ROOM_MARK+">");
-			sb.append("<"+USERS_MARK+">");
+			sb.append("<"+ROOM_MARK+">"+room.roomName+"</"+ROOM_MARK+">"+END_LINE);
+			sb.append("<"+USERS_MARK+">"+END_LINE);
 			for(String nick : room.members) {
-				sb.append("<"+NICK_MARK+">"+nick+"</"+NICK_MARK+">");
+				sb.append("<"+NICK_MARK+">"+nick+"</"+NICK_MARK+">"+END_LINE);
 			}
-			sb.append("</"+USERS_MARK+">");
+			sb.append("</"+USERS_MARK+">"+END_LINE);
 		}
 		
-		sb.append("</"+MESSAGE_MARK+">");
+		sb.append("</"+MESSAGE_MARK+">"+END_LINE);
 		
 		String message = sb.toString();
 		return message;
@@ -80,6 +80,10 @@ public class SendRoomList extends NCMessage {
 			
 		} 
 		return new SendRoomList(list);
+	}
+	
+	public List<NCRoomDescription> getDescRoomList(){
+		return Collections.unmodifiableList(this.descRoomList);
 	}
 	
 }

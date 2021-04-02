@@ -1,0 +1,15 @@
+1. NCController 79 & 115
+2. NanoCharServer 39
+
+
+
+
+HAY QUE HACERLOS??
+1. NCController 83 & 122 , NCServerManager 84 -> EnterRoom
+2. NCController 158 , NCConnector 118 -> InfoOneRoom
+3. NCController 164 , NCServerManager 91 -> ExitRoom
+4. NCConnector 115
+
+
+
+Quitar números mágicos  (DirectoryThread, NCServerThread)

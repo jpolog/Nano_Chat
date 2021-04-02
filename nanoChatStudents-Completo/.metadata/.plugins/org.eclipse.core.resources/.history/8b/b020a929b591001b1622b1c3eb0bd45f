@@ -1,0 +1,16 @@
+package es.um.redes.nanoChat.messageML;
+
+public class SolicitudSala {
+	final char IZQ = '<';
+	final char DER = '>';
+	final char FIN = '/';
+	StringBuffer sb = new StringBuffer();
+	
+	
+	sb.append(IZQ+msg+DER);
+	sb.append(IZQ+op+DER+valOp+IZQ+FIN+op+DER);
+	sb.append(IZQ+nk+DER+valRm+IZQ+FIN+nk+DER);
+	sb.append(IZQ+FIN+msg+DER);
+	String message = sb.toString();
+	return message;
+}

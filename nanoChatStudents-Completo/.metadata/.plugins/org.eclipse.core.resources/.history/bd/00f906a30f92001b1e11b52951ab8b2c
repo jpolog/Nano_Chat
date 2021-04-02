@@ -1,0 +1,48 @@
+package es.um.redes.nanoChat.server.roomManager;
+
+import java.io.IOException;
+import java.net.Socket;
+import java.util.HashSet;
+
+public class Room extends NCRoomManager {
+	
+	private NCRoomDescription description;
+	
+
+	@Override
+	public boolean registerUser(String u, Socket s) {
+		// TODO Auto-generated method stub
+		this.description.members.add(u);
+		return false;
+	}
+
+	@Override
+	public void broadcastMessage(String u, String message) throws IOException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removeUser(String u) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setRoomName(String roomName) {
+		this.roomName = roomName;	//Habría que usar un set??
+		
+	}
+
+	@Override
+	public NCRoomDescription getDescription() {
+		return this.description;
+	}
+
+	@Override
+	public int usersInRoom() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+}

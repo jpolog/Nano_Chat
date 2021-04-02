@@ -1,0 +1,25 @@
+package es.um.redes.nanoChat.messageML;
+
+public class SolicitudSala extends NCMessage{
+
+	@Override
+	protected String toEncodedString() {
+		final char IZQ = '<';
+		final char DER = '>';
+		final char FIN = '/';
+		StringBuffer sb = new StringBuffer();
+		String msg = "message";
+		String op = "operation";
+		String rm = "room";
+		char valOp = '4';
+		String valRm = "room_name";
+		
+		sb.append(IZQ+msg+DER);
+		sb.append(IZQ+op+DER+valOp+IZQ+FIN+op+DER);
+		sb.append(IZQ+rm+DER+valRm+IZQ+FIN+rm+DER);
+		sb.append(IZQ+FIN+msg+DER);
+		String message = sb.toString();
+		return message;
+	}
+	
+}

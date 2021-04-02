@@ -1,0 +1,5 @@
+package es.um.redes.nanoChat.server.roomManager;
+
+public class Room {
+
+}

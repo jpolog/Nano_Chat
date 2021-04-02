@@ -98,7 +98,7 @@ public class NCServerThread extends Thread {
 				
 				retry=false;
 			}else {
-				resp = NCMessage.makeDuplicatedNick();
+				resp = NCMessage.makeDuplicatedNickMessage();
 				dos.writeUTF(((DuplicatedNick)resp).toEncodedString());
 			}
 			

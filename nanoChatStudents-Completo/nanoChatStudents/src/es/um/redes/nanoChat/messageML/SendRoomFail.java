@@ -16,9 +16,9 @@ public class SendRoomFail extends NCMessage{
 		
 		StringBuffer sb = new StringBuffer();
 		
-		sb.append("<"+MESSAGE_MARK+">");
-		sb.append("<"+OPERATION_MARK+">"+this.opcode+"</"+OPERATION_MARK+">");
-		sb.append("</"+MESSAGE_MARK+">");
+		sb.append("<"+MESSAGE_MARK+">"+END_LINE);
+		sb.append("<"+OPERATION_MARK+">"+this.opcode+"</"+OPERATION_MARK+">"+END_LINE);
+		sb.append("</"+MESSAGE_MARK+">"+END_LINE);
 		
 		String message = sb.toString();
 		return message;

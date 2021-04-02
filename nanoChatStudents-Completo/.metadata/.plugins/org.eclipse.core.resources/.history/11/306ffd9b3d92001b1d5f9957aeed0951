@@ -1,0 +1,63 @@
+package es.um.redes.nanoChat.messageML;
+import es.um.redes.nanoChat.server.roomManager.NCRoomDescription;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.HashSet;
+import java.util.List;
+import java.util.HashMap;
+
+
+public class SendRoomList {
+	private static final byte OPCODE = 10;
+	private byte opcode = 10;
+	private HashMap<String, HashSet<String>> roomMap;
+	
+	private static final String RE_NICK = "<nick>(.*?)</nick>";
+	private static final String NICK_MARK = "nick";
+	private static final String RE_ROOM = "<room>(.*?)</room>";
+	private static final String ROOM_MARK = "room";
+	
+	
+
+	public SendRoomList(List<NCRoomDescription> list) {
+		this.opcode = OPCODE;
+		this.nick = nick;
+		
+	}
+	
+
+	@Override
+	protected String toEncodedString() {
+		
+		StringBuffer sb = new StringBuffer();
+		
+		sb.append("<"+MESSAGE_MARK+">");
+		sb.append("<"+OPERATION_MARK+">"+this.opcode+"</"+OPERATION_MARK+">");
+		sb.append("<"+NICK_MARK+">"+this.nick+"</"+NICK_MARK+">");
+		sb.append("</"+MESSAGE_MARK+">");
+		
+		String message = sb.toString();
+		return message;
+	}
+	
+	public static RegisterNick readFromString(String message) {
+		String found_nick = null;
+
+		// Tienen que estar los campos porque el mensaje es de tipo RoomMessage
+		Pattern pat_nick = Pattern.compile(RE_NICK);
+		Matcher mat_nick = pat_nick.matcher(message);
+		if (mat_nick.find()) {
+			// Name found
+			found_nick = mat_nick.group(1);
+		} else {
+			System.out.println("Error en RegisterNick: no se ha encontrado parametro.");
+			return null;
+		}
+		return new RegisterNick(found_nick);
+	}
+	
+	public String getNick() {
+		return this.nick;
+	}
+}

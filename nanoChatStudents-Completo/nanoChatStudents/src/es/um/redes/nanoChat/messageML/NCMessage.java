@@ -27,8 +27,10 @@ public abstract class NCMessage {
 	public static final byte OP_ROOM_LIST_REQUEST = 9;
 	public static final byte OP_SEND_ROOM_LIST = 10;
 
-	public static final char DELIMITER = ':';    //Define el delimitador
+
+	//public static final char DELIMITER = ':';    //Define el delimitador
 	public static final char END_LINE = '\n';    //Define el carácter de fin de línea
+
 	
 	public static final String OPERATION_MARK = "operation";
 	public static final String MESSAGE_MARK = "message";
@@ -181,16 +183,16 @@ public abstract class NCMessage {
 	public static NCMessage makeNickOkMessage() {
 		return new NickOk();
 	}
-	public static NCMessage makeDuplicatedNick() {
+	public static NCMessage makeDuplicatedNickMessage() {
 		return new DuplicatedNick();
 	}
-	public static NCMessage makeRoomRequest(String room_name) {
+	public static NCMessage makeRoomRequestMessage(String room_name) {
 		return new RoomRequest(room_name);
 	}
-	public static NCMessage makeSendRoomOk() {
+	public static NCMessage makeSendRoomOkMessage() {
 		return new SendRoomOk();
 	}
-	public static NCMessage makeSenRoomFail() {
+	public static NCMessage makeSenRoomFailMessage() {
 		return new SendRoomFail();
 	}
 	public static NCMessage makeEnterRoomMessage(String room_name) {

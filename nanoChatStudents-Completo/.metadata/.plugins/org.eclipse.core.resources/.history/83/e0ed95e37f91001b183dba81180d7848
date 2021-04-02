@@ -1,0 +1,12 @@
+package es.um.redes.nanoChat.messageML;
+
+public class RegisterNick extends NCMessage{
+
+	@Override
+	protected String toEncodedString() {
+		final char DELIMITER_IZQ = '<';
+		final char DELIMITER_DER = '>';
+		final char FIN = '/';
+	}
+
+}

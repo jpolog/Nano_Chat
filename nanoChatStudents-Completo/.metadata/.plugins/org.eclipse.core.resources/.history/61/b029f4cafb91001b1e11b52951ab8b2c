@@ -1,0 +1,45 @@
+package es.um.redes.nanoChat.messageML;
+
+public class RegisterNick extends NCMessage{
+	
+	private static final int op = 1;
+	private String nick;
+	
+	private static final String RE_NICK = "<nick>(.*?)</nick>";
+	
+	
+	
+
+	public RegisterNick(String nick) {
+		this.opcode = op;
+		this.nick = nick;
+		
+	}
+
+
+
+
+	@Override
+	protected String toEncodedString() {
+		final char IZQ = '<';
+		final char DER = '>';
+		final char FIN = '/';
+		StringBuffer sb = new StringBuffer();
+		String msg = "message";
+		String op = "operation";
+		String nk = "nick";
+		
+		
+		sb.append(IZQ+msg+DER);
+		sb.append(IZQ+op+DER+this.opcode+IZQ+FIN+op+DER);
+		sb.append(IZQ+nk+DER+this.nick+IZQ+FIN+nk+DER);
+		sb.append(IZQ+FIN+msg+DER);
+		String message = sb.toString();
+		return message;
+	}
+	
+	public static RegisterNick readFromString(String nick) {
+		
+	}
+
+}

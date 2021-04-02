@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+    <fullyQualifiedTypeName name="java.io.DataOutputStream"/>
+    <fullyQualifiedTypeName name="java.io.DataInputStream"/>
+    <fullyQualifiedTypeName name="es.um.redes.nanoChat.messageML.NCMessage"/>
+    <fullyQualifiedTypeName name="es.um.redes.nanoChat.server.roomManager.NCRoomManager"/>
+    <fullyQualifiedTypeName name="es.um.redes.nanoChat.messageML.RegisterNick"/>
+    <fullyQualifiedTypeName name="es.um.redes.nanoChat.messageML.NCRoomMessage"/>
+    <fullyQualifiedTypeName name="es.um.redes.nanoChat.server.roomManager.Room"/>
+    <fullyQualifiedTypeName name="java.util.regex.Pattern"/>
+    <fullyQualifiedTypeName name="java.util.regex.Matcher"/>
+    <fullyQualifiedTypeName name="java.util.HashMap"/>
+    <fullyQualifiedTypeName name="java.util.List"/>
+    <fullyQualifiedTypeName name="java.util.Collections"/>
+    <fullyQualifiedTypeName name="es.um.redes.nanoChat.server.roomManager.NCRoomDescription"/>
+    <fullyQualifiedTypeName name="java.util.HashSet"/>
+    <fullyQualifiedTypeName name="java.util.Set"/>
+    <fullyQualifiedTypeName name="java.util.ArrayList"/>
+    <fullyQualifiedTypeName name="es.um.redes.nanoChat.messageML.NickOk"/>
+    <fullyQualifiedTypeName name="es.um.redes.nanoChat.messageML.DuplicatedNick"/>
+    <fullyQualifiedTypeName name="es.um.redes.nanoChat.messageML.RoomListRequest"/>
+    <fullyQualifiedTypeName name="es.um.redes.nanoChat.messageML.SendRoomList"/>
+    <fullyQualifiedTypeName name="es.um.redes.nanoChat.messageML.RoomRequest"/>
+    <fullyQualifiedTypeName name="es.um.redes.nanoChat.messageML.ExitRoom"/>
+</qualifiedTypeNameHistroy>

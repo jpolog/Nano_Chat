@@ -1,0 +1,16 @@
+package es.um.redes.nanoChat.messageML;
+
+public class RoomListRequest extends NCMessage {
+
+	private static final byte OPCODE = ;
+	
+	public RoomListRequest() {
+		this.opcode = OPCODE;
+	}
+	@Override
+	protected String toEncodedString() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

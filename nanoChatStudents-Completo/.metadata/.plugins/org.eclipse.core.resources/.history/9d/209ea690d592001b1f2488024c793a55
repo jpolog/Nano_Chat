@@ -1,0 +1,5 @@
+package es.um.redes.nanoChat.directory.server;
+
+public class DirectoryThread {
+
+}

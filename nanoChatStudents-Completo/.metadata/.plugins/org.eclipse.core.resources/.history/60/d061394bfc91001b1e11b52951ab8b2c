@@ -1,0 +1,60 @@
+package es.um.redes.nanoChat.messageML;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class RegisterNick extends NCMessage{
+	
+	private static final int op = 1;
+	private String nick;
+	
+	private static final String RE_NICK = "<nick>(.*?)</nick>";
+	
+	
+	
+
+	public RegisterNick(String nick) {
+		this.opcode = op;
+		this.nick = nick;
+		
+	}
+
+
+
+
+	@Override
+	protected String toEncodedString() {
+		final char IZQ = '<';
+		final char DER = '>';
+		final char FIN = '/';
+		StringBuffer sb = new StringBuffer();
+		String msg = "message";
+		String op = "operation";
+		String nk = "nick";
+		
+		
+		sb.append(IZQ+msg+DER);
+		sb.append(IZQ+op+DER+this.opcode+IZQ+FIN+op+DER);
+		sb.append(IZQ+nk+DER+this.nick+IZQ+FIN+nk+DER);
+		sb.append(IZQ+FIN+msg+DER);
+		String message = sb.toString();
+		return message;
+	}
+	
+	public static RegisterNick readFromString(String message) {
+		String found_nick = null;
+
+		// Tienen que estar los campos porque el mensaje es de tipo RoomMessage
+		Pattern pat_nick = Pattern.compile(RE_NICK);
+		Matcher mat_nick = pat_nick.matcher(message);
+		if (mat_nick.find()) {
+			// Name found
+			found_nick = mat_nick.group(1);
+		} else {
+			System.out.println("Error en RegisterNick: no se ha encontrado parametro.");
+			return null;
+		}
+		return new RegisterNick(found_nick);
+	}
+
+}

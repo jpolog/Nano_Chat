@@ -2,7 +2,6 @@ package es.um.redes.nanoChat.server.roomManager;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.util.HashSet;
 import java.util.HashMap;
 import java.util.LinkedList;
 
