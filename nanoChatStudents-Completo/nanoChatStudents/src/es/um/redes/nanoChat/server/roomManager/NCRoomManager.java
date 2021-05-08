@@ -10,7 +10,7 @@ public abstract class NCRoomManager {
 	//Método para registrar a un usuario u en una sala (se anota también su socket de comunicación)
 	public abstract boolean registerUser(String u, Socket s);
 	//Método para hacer llegar un mensaje enviado por un usuario u
-	public abstract void broadcastMessage(String u, String message) throws IOException;
+	public abstract void broadcastMessage(byte opcode, String u, String message) throws IOException;
 	//Método para eliminar un usuario de una sala
 	public abstract void removeUser(String u);
 	//Método para nombrar una sala

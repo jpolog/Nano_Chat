@@ -1,9 +1,13 @@
 package es.um.redes.nanoChat.server.roomManager;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.LinkedList;
+
+import es.um.redes.nanoChat.messageML.NCMessage;
+import es.um.redes.nanoChat.messageML.NCNickMessage;
 
 public class Room extends NCRoomManager {
 	
@@ -29,10 +33,40 @@ public class Room extends NCRoomManager {
 	}
 
 	@Override
-	public void broadcastMessage(String u, String message) throws IOException {
-		// TODO Auto-generated method stub
-		
+	public void broadcastMessage(byte opcode, String u, String message) throws IOException {
+		for(String user : this.usersMap.keySet()) {
+			DataOutputStream dos = new DataOutputStream(this.usersMap.get(user).getOutputStream());
+			
+			
+			switch (opcode) {
+			case NCMessage.OP_TEXT_MESSAGE_IN: {
+				NCMessage reply = NCMessage.makeNickMessage(NCMessage.OP_TEXT_MESSAGE_IN, u, message);
+				dos.writeUTF(((NCNickMessage) reply).toEncodedString());
+				break;
+			}
+			case NCMessage.OP_ENTER_ROOM_NOTIFICATION: {
+				NCMessage reply = NCMessage.makeNickMessage(NCMessage.OP_ENTER_ROOM_NOTIFICATION, u, message);
+				dos.writeUTF(((NCNickMessage) reply).toEncodedString());
+				break;
+			}
+			case NCMessage.OP_EXIT_ROOM_NOTIFICATION: {
+				NCMessage reply = NCMessage.makeNickMessage(NCMessage.OP_EXIT_ROOM_NOTIFICATION, u, message);
+				dos.writeUTF(((NCNickMessage) reply).toEncodedString());
+				break;
+			}
+//AÑADIR UN DEFAULT??????????
+			}
+				
+		}
 	}
+	
+	
+	public void sendPrivateMessage(String u, String receiver, String message) throws IOException {
+		DataOutputStream dos = new DataOutputStream(this.usersMap.get(receiver).getOutputStream());
+		NCMessage reply = NCMessage.makeNickMessage(NCMessage.OP_PRIVATE_TEXT_MESSAGE_IN, u, message);
+		dos.writeUTF(((NCNickMessage)reply).toEncodedString());
+	}
+	
 
 	@Override
 	public void removeUser(String u) {

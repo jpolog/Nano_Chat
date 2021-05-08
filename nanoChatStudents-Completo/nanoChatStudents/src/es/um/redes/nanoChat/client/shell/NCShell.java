@@ -154,6 +154,12 @@ public class NCShell {
 					message.append(st.nextToken()+" ");
 				vargs.add(message.toString());
 				break;
+			case NCCommands.COM_ROOM_RENAME:
+				//Este requiere un parámetro
+				while (st.hasMoreTokens()) {
+					vargs.add(st.nextToken());
+				}
+				break;
 			default:
 				System.out.println("That command is only valid if you are not in a room");;
 			}
@@ -185,6 +191,19 @@ public class NCShell {
 		case NCCommands.COM_SEND:
 			if (args.length == 0) {
 				System.out.println("Correct use: send <message>");
+				return false;
+			}
+			break;
+		//send requiere el parámetro <nick> y el parámetro <message>
+		case NCCommands.COM_SEND_PRIVATE:
+			if (args.length < 2) {
+				System.out.println("Correct use: send <nickname> <message>");
+				return false;
+			}
+			break;
+		case NCCommands.COM_ROOM_RENAME:
+			if (args.length == 0 || args.length > 1) {
+				System.out.println("Correct use: rename <newName>");
 				return false;
 			}
 			break;

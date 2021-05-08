@@ -16,6 +16,8 @@ public class NCCommands {
 	public static final byte COM_ROOMINFO = 7;
 	public static final byte COM_QUIT = 8;
 	public static final byte COM_HELP = 9;
+	public static final byte COM_SEND_PRIVATE = 10;
+	public static final byte COM_ROOM_RENAME = 11;
 	public static final byte COM_SOCKET_IN = 101;
 	
 	/**
@@ -32,7 +34,9 @@ public class NCCommands {
 		COM_EXIT, 
 		COM_ROOMINFO,
 		COM_QUIT,
-		COM_HELP
+		COM_HELP,
+		COM_SEND_PRIVATE,
+		COM_ROOM_RENAME
 		};
 
 	/**
@@ -46,7 +50,9 @@ public class NCCommands {
 		"exit",
 		"info",
 		"quit",
-		"help" };
+		"help",
+		"send_p",
+		"rename" };
 
 	/**
 	 * Mensaje de ayuda para cada orden
@@ -59,7 +65,9 @@ public class NCCommands {
 		"to leave the current room", 
 		"shows the information of the room",
 		"to quit the application",
-		"shows this information"};
+		"shows this information",
+		"to send to the member <nickname> a private <message>",
+		"to set the <name> as the new name of the current room" };
 
 	private static Map<String, Byte> _commands_map;
 	static {

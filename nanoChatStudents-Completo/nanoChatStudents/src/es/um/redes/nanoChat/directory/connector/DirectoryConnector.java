@@ -65,7 +65,7 @@ public class DirectoryConnector {
 	 * Envía una solicitud para obtener el servidor de chat asociado a un determinado protocolo
 	 * 
 	 */
-	public InetSocketAddress getServerForProtocol(int protocol) throws IOException {
+	public InetSocketAddress getServerForProtocol(byte protocol) throws IOException {
 
 		//TODO Generar el mensaje de consulta llamando a buildQuery()
 		byte[] men = buildQuery(protocol);
@@ -79,13 +79,13 @@ public class DirectoryConnector {
 		//TODO Establecer el temporizador para el caso en que no haya respuesta
 		//TODO Recibir la respuesta
 		int i=1;	
-		while(i<6) {	//reintentos
+		while(i<4) {	//reintentos
 			try {
 				socket.setSoTimeout(TIMEOUT);
 				socket.receive(dpRec);
-				i=6;
+				i=4;
 			} catch (SocketTimeoutException e) {
-				if(i<5) {
+				if(i<3) {
 					socket.send(dpSend);
 					System.out.printf("Reintento número %d\n", i);
 					
@@ -101,11 +101,11 @@ public class DirectoryConnector {
 		}
 
 	//Método para generar el mensaje de consulta (para obtener el servidor asociado a un protocolo)
-	private byte[] buildQuery(int protocol) {
+	private byte[] buildQuery(byte protocol) {
 		//TODO Devolvemos el mensaje codificado en binario según el formato acordado
 		ByteBuffer bb = ByteBuffer.allocate(2);
 		byte opCode = 3;
-		byte protocolId = ((Integer)protocol).byteValue();
+		byte protocolId = protocol;
 		bb.put(opCode);
 		bb.put(protocolId);
 		byte[] men = bb.array();
@@ -136,7 +136,7 @@ public class DirectoryConnector {
 	 * Envía una solicitud para registrar el servidor de chat asociado a un determinado protocolo
 	 * 
 	 */
-	public boolean registerServerForProtocol(int protocol, int port) throws IOException {
+	public boolean registerServerForProtocol(byte protocol, int port) throws IOException {
 		boolean resp = false;
 		//TODO Construir solicitud de registro (buildRegistration)
 		byte[] men = buildRegistration(protocol, port);
@@ -146,10 +146,24 @@ public class DirectoryConnector {
 		//TODO Recibe respuesta
 		byte[] res = new byte[PACKET_MAX_SIZE];
 		DatagramPacket dpRec = new DatagramPacket(res, res.length);
-		
-		/* -------------------------------------------------------------------> ¿Establecer el temporizador para el caso en que no haya respuesta???????? */
-		
-		socket.receive(dpRec);
+		int i=1;	
+		while(i<4) {	//reintentos
+			try {
+				socket.setSoTimeout(TIMEOUT);
+				socket.receive(dpRec);
+				i=4;
+			} catch (SocketTimeoutException e) {
+				if(i<3) {
+					socket.send(dpSend);
+					System.out.printf("Reintento número %d\n", i);
+					
+				}else {
+					System.err.println("No se ha recibido el paquete");
+					
+				}
+				i+=1;
+			}
+		}
 		//TODO Procesamos la respuesta para ver si se ha podido registrar correctamente
 		ByteBuffer ret = ByteBuffer.wrap(dpRec.getData());
 		byte opCode = ret.get();
@@ -162,10 +176,10 @@ public class DirectoryConnector {
 
 	//Método para construir una solicitud de registro de servidor
 	//OJO: No hace falta proporcionar la dirección porque se toma la misma desde la que se envió el mensaje
-	private byte[] buildRegistration(int protocol, int port) {
+	private byte[] buildRegistration(byte protocol, int port) {
 		ByteBuffer bb = ByteBuffer.allocate(6);
 		byte opCode = 1;
-		byte protocolId = ((Integer)protocol).byteValue();
+		byte protocolId = protocol;
 		bb.put(opCode);
 		bb.put(protocolId);
 		bb.putInt(port);

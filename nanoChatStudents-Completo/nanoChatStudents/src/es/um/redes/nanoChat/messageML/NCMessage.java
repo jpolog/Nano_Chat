@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,13 +20,27 @@ public abstract class NCMessage {
 	public static final byte OP_REGISTER_NICK = 1;
 	public static final byte OP_NICK_OK = 2;
 	public static final byte OP_DUPLICATED_NICK = 3;
-	public static final byte OP_ROOM_REQUEST = 4;
-	public static final byte OP_SEND_ROOM_OK = 5;
-	public static final byte OP_SEND_ROOM_FAIL = 6;
-	public static final byte OP_ENTER_ROOM = 7;
-	public static final byte OP_EXIT_ROOM = 8;
-	public static final byte OP_ROOM_LIST_REQUEST = 9;
-	public static final byte OP_SEND_ROOM_LIST = 10;
+	public static final byte OP_ROOM_LIST_REQUEST = 4;
+	public static final byte OP_ROOM_LIST = 5;
+	public static final byte OP_ENTER_ROOM = 6;
+	public static final byte OP_ENTER_ROOM_OK = 7;
+	public static final byte OP_ENTER_ROOM_FAIL = 8;
+	public static final byte OP_ENTER_ROOM_NOTIFICATION = 9;
+	public static final byte OP_EXIT_ROOM = 10;
+	public static final byte OP_EXIT_ROOM_NOTIFICATION = 11;
+	public static final byte OP_ROOM_INFO_REQUEST = 12;
+	public static final byte OP_ROOM_INFO = 13;
+	public static final byte OP_TEXT_MESSAGE_OUT = 14;
+	public static final byte OP_TEXT_MESSAGE_IN = 15;
+	public static final byte OP_PRIVATE_TEXT_MESSAGE_OUT = 16;
+	public static final byte OP_PRIVATE_TEXT_MESSAGE_IN = 17;
+	public static final byte OP_ROOM_RENAME_REQUEST= 18;
+	public static final byte OP_ROOM_RENAME_OK = 19;
+	public static final byte OP_ROOM_RENAME_DUPLICATED = 20;
+	
+	
+	
+	
 
 
 	//public static final char DELIMITER = ':';    //Define el delimitador
@@ -44,30 +59,49 @@ public abstract class NCMessage {
 		OP_REGISTER_NICK,
 		OP_NICK_OK,
 		OP_DUPLICATED_NICK,
-		OP_ROOM_REQUEST,
-		OP_SEND_ROOM_OK,
-		OP_SEND_ROOM_FAIL,
-		OP_ENTER_ROOM,
-		OP_EXIT_ROOM,
 		OP_ROOM_LIST_REQUEST,
-		OP_SEND_ROOM_LIST
-		
-		};
+		OP_ROOM_LIST,
+		OP_ENTER_ROOM,
+		OP_ENTER_ROOM_OK,
+		OP_ENTER_ROOM_FAIL,
+		OP_ENTER_ROOM_NOTIFICATION,
+		OP_EXIT_ROOM,
+		OP_EXIT_ROOM_NOTIFICATION,
+		OP_ROOM_INFO_REQUEST,
+		OP_ROOM_INFO,
+		OP_TEXT_MESSAGE_OUT,
+		OP_TEXT_MESSAGE_IN,
+		OP_PRIVATE_TEXT_MESSAGE_OUT,
+		OP_PRIVATE_TEXT_MESSAGE_IN,
+		OP_ROOM_RENAME_REQUEST,
+		OP_ROOM_RENAME_OK,
+		OP_ROOM_RENAME_DUPLICATED,
+	};
 
 	/**
 	 * cadena exacta de cada orden
 	 */
 	private static final String[] _valid_operations_str = {
 		"Register Nick",
-		"Nick OK",
+		"Nick Ok",
 		"Duplicated Nick",
-		"Request Room",
-		"Send Room Ok",
-		"Send Room Fail",
-		"Enter Room",
-		"Exit Room",
 		"Room List Request",
-		"Send Room List"
+		"Room List",
+		"Enter Room",
+		"Enter Room Ok",
+		"Enter Room Fail",
+		"Enter Room Notification",
+		"Exit Room",
+		"Exit Room Notification",
+		"Room Info Request",
+		"Room Info",
+		"Text Message Out",		
+		"Text Message In",
+		"Private Text Message Out",
+		"Private Text Message In",
+		"Room Rename Request",
+		"Romm Rename Ok",
+		"Room Rename Duplicated",
 	};
 
 	private static Map<String, Byte> _operation_to_opcode;
@@ -133,36 +167,65 @@ public abstract class NCMessage {
 		
 		switch (code) {
 		//TODO Parsear el resto de mensajes 
-		case OP_REGISTER_NICK:
-		{
-			return RegisterNick.readFromString(message);
+		case OP_REGISTER_NICK: {
+			return NCTextMessage.readFromString(OP_REGISTER_NICK, message);
 		}
 		case OP_NICK_OK: {
-			return NickOk.readFromString(message);
+			return new NCOperationMessage(OP_NICK_OK);
 		}
 		case OP_DUPLICATED_NICK: {
-			return DuplicatedNick.readFromString(message);
-		}
-		case OP_ROOM_REQUEST: {
-			return RoomRequest.readFromString(message);
-		}
-		case OP_SEND_ROOM_OK: {
-			return SendRoomOk.readFromString(message);
-		}
-		case OP_SEND_ROOM_FAIL: {
-			return SendRoomFail.readFromString(message);
-		}
-		case OP_ENTER_ROOM: {
-			return EnterRoom.readFromString(message);
-		}
-		case OP_EXIT_ROOM: {
-			return ExitRoom.readFromString(message);
+			return new NCOperationMessage(OP_DUPLICATED_NICK);
 		}
 		case OP_ROOM_LIST_REQUEST: {
-			return RoomListRequest.readFromString(message);
+			return new NCOperationMessage(OP_ROOM_LIST_REQUEST);
 		}
-		case OP_SEND_ROOM_LIST: {
-			return SendRoomList.readFromString(message);
+		case OP_ROOM_LIST: {	
+			return NCInfoListMessage.readFromString(OP_ROOM_LIST, message);
+		}
+		case OP_ENTER_ROOM: {
+			return NCTextMessage.readFromString(OP_ENTER_ROOM, message);
+		}
+		case OP_ENTER_ROOM_OK: {
+			return new NCOperationMessage(OP_ENTER_ROOM_OK);
+		}
+		case OP_ENTER_ROOM_FAIL: {
+			return new NCOperationMessage(OP_ENTER_ROOM_FAIL);
+		}
+		case OP_ENTER_ROOM_NOTIFICATION: {
+			return NCTextMessage.readFromString(OP_ENTER_ROOM_NOTIFICATION, message);
+		}
+		case OP_EXIT_ROOM: {
+			return new NCOperationMessage(OP_EXIT_ROOM);
+		}
+		case OP_EXIT_ROOM_NOTIFICATION: {
+			return NCTextMessage.readFromString(OP_EXIT_ROOM_NOTIFICATION, message);
+		}
+		case OP_ROOM_INFO_REQUEST: {
+			return new NCOperationMessage(OP_ROOM_INFO_REQUEST);
+		}
+		case OP_ROOM_INFO: {
+			return NCInfoMessage.readFromString(OP_ROOM_INFO, message);
+		}
+		case OP_TEXT_MESSAGE_OUT: {
+			return NCTextMessage.readFromString(OP_TEXT_MESSAGE_OUT, message);
+		}
+		case OP_TEXT_MESSAGE_IN: {
+			return NCNickMessage.readFromString(OP_TEXT_MESSAGE_IN, message);
+		}
+		case OP_PRIVATE_TEXT_MESSAGE_OUT: {
+			return NCNickMessage.readFromString(OP_PRIVATE_TEXT_MESSAGE_OUT, message);
+		}
+		case OP_PRIVATE_TEXT_MESSAGE_IN: {
+			return NCNickMessage.readFromString(OP_PRIVATE_TEXT_MESSAGE_IN, message);
+		}
+		case OP_ROOM_RENAME_REQUEST: {
+			return NCTextMessage.readFromString(OP_ROOM_RENAME_REQUEST, message);
+		}
+		case OP_ROOM_RENAME_OK: {
+			return new NCOperationMessage(OP_ROOM_RENAME_OK);
+		}
+		case OP_ROOM_RENAME_DUPLICATED: {
+			return new NCOperationMessage(OP_ROOM_RENAME_DUPLICATED);
 		}
 		default:
 			System.err.println("Unknown message type received:" + code);
@@ -172,13 +235,31 @@ public abstract class NCMessage {
 	}
 
 	//TODO Programar el resto de métodos para crear otros tipos de mensajes
+	public static NCMessage makeOperationMessage(byte opcode) {
+		return new NCOperationMessage(opcode);
+	}
+	public static NCMessage makeTextMessage(byte opcode, String text) {
+		return new NCTextMessage(opcode, text);
+	}
+	public static NCMessage makeInfoListMessage(byte opcode, List<NCRoomDescription> roomList) {
+		return new NCInfoListMessage(opcode, roomList);
+	}
+	public static NCMessage makeInfoMessage(byte opcode, String name, Set<String> members, long timeLastMessage) {
+		return new NCInfoMessage(opcode, name, members, timeLastMessage);
+	}
+	public static NCMessage makeNickMessage(byte opcode, String nick, String text) {
+		return new NCNickMessage(opcode, nick, text);
+	}
+	
+	
+	
+/**
 	
 	public static NCMessage makeRoomMessage(byte code, String room) {
 		return new NCRoomMessage(code, room);
 	}
-	
 	public static NCMessage makeRegisterNickMessage(String nick) {
-		return new RegisterNick(nick);
+		return new NCTextMessage(code, nick);
 	}
 	public static NCMessage makeNickOkMessage() {
 		return new NickOk();
@@ -186,17 +267,14 @@ public abstract class NCMessage {
 	public static NCMessage makeDuplicatedNickMessage() {
 		return new DuplicatedNick();
 	}
-	public static NCMessage makeRoomRequestMessage(String room_name) {
-		return new RoomRequest(room_name);
-	}
-	public static NCMessage makeSendRoomOkMessage() {
-		return new SendRoomOk();
-	}
-	public static NCMessage makeSenRoomFailMessage() {
-		return new SendRoomFail();
-	}
 	public static NCMessage makeEnterRoomMessage(String room_name) {
 		return new EnterRoom(room_name);
+	}
+	public static NCMessage makeEnterRoomOkMessage() {
+		return new EnterRoomOk();
+	}
+	public static NCMessage makeEnterRoomFailMessage() {
+		return new EnterRoomFail();
 	}
 	public static NCMessage makeExitRoomMessage() {
 		return new ExitRoom();
@@ -204,7 +282,9 @@ public abstract class NCMessage {
 	public static NCMessage makeRoomListRequestMessage() {
 		return new RoomListRequest();
 	}
-	public static NCMessage makeSendRoomListMessage(List<NCRoomDescription> descList) {
-		return new SendRoomList(descList);
+	public static NCMessage makeRoomListMessage(List<NCRoomDescription> descList) {
+		return new RoomList(descList);
 	}
+*/
+	
 }

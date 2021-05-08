@@ -16,7 +16,7 @@ public class DirectoryThread extends Thread {
 	//Tamaño máximo del paquete UDP
 	private static final int PACKET_MAX_SIZE = 128;
 	//Estructura para guardar las asociaciones ID_PROTOCOLO -> Dirección del servidor
-	protected Map<Integer,InetSocketAddress> servers;
+	protected Map<Byte,InetSocketAddress> servers;
 
 	//Socket de comunicación UDP
 	protected DatagramSocket socket = null;
@@ -33,7 +33,7 @@ public class DirectoryThread extends Thread {
 		socket = new DatagramSocket(serverAddress);
 		messageDiscardProbability = corruptionProbability;
 		//Inicialización del mapa
-		servers = new HashMap<Integer,InetSocketAddress>();
+		servers = new HashMap<Byte,InetSocketAddress>();
 	}
 
 	@Override
@@ -105,10 +105,10 @@ public class DirectoryThread extends Thread {
 				", port = " + Integer.toString(port));
 			InetAddress chatserverAddress = clientAddr.getAddress();
 			InetSocketAddress chatserverSocketAddress = new InetSocketAddress(chatserverAddress, port);
-			servers.put((int) protocolId, chatserverSocketAddress);
+			servers.put(protocolId, chatserverSocketAddress);
 			System.out.println("Value of servers (Map):");
-			for(Map.Entry<Integer, InetSocketAddress> entry: servers.entrySet()) {
-				Integer key = entry.getKey();
+			for(Map.Entry<Byte, InetSocketAddress> entry: servers.entrySet()) {
+				Byte key = entry.getKey();
 				InetSocketAddress value = entry.getValue();
 				String entry_address = value.getAddress().toString().substring(1);
 				Integer entry_port = value.getPort();
@@ -126,8 +126,8 @@ public class DirectoryThread extends Thread {
 					" (choose server IP & port)" +
 					", protocol = " + Byte.toString(protocolId));
 			//TODO 3.1) Devolver una dirección si existe un servidor (sendServerInfo)
-			if(servers.containsKey((int) protocolId))		
-				sendServerInfo((InetSocketAddress) servers.get((int) protocolId), clientAddr);
+			if(servers.containsKey(protocolId))		
+				sendServerInfo((InetSocketAddress) servers.get(protocolId), clientAddr);
 			//TODO 3.2) Devolver una notificación si no existe un servidor (sendEmpty)
 			else sendEmpty(clientAddr);
 			break;

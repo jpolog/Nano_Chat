@@ -8,12 +8,12 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.List;
 
-import es.um.redes.nanoChat.messageML.ExitRoom;
+import es.um.redes.nanoChat.messageML.NCInfoListMessage;
+import es.um.redes.nanoChat.messageML.NCInfoMessage;
 import es.um.redes.nanoChat.messageML.NCMessage;
-import es.um.redes.nanoChat.messageML.NCRoomMessage;
-import es.um.redes.nanoChat.messageML.RoomListRequest;
-import es.um.redes.nanoChat.messageML.RoomRequest;
-import es.um.redes.nanoChat.messageML.SendRoomList;
+import es.um.redes.nanoChat.messageML.NCNickMessage;
+import es.um.redes.nanoChat.messageML.NCOperationMessage;
+import es.um.redes.nanoChat.messageML.NCTextMessage;
 import es.um.redes.nanoChat.server.roomManager.NCRoomDescription;
 
 //Esta clase proporciona la funcionalidad necesaria para intercambiar mensajes entre el cliente y el servidor de NanoChat
@@ -54,7 +54,7 @@ public class NCConnector {
 	public boolean registerNickname(String nick) throws IOException {
 		//Funcionamiento resumido: SEND(nick) and RCV(NICK_OK) or RCV(NICK_DUPLICATED)
 		//Creamos un mensaje de tipo RoomMessage con opcode OP_NICK en el que se inserte el nick
-		NCRoomMessage message = (NCRoomMessage) NCMessage.makeRoomMessage(NCMessage.OP_REGISTER_NICK, nick);
+		NCTextMessage message = (NCTextMessage) NCMessage.makeTextMessage(NCMessage.OP_REGISTER_NICK, nick);
 		//Obtenemos el mensaje de texto listo para enviar
 		String rawMessage = message.toEncodedString();
 		//Escribimos el mensaje en el flujo de salida, es decir, provocamos que se envíe por la conexión TCP
@@ -74,24 +74,40 @@ public class NCConnector {
 	public List<NCRoomDescription> getRooms() throws IOException {
 		//Funcionamiento resumido: SND(GET_ROOMS) and RCV(ROOM_LIST)
 		//TODO completar el método
-		NCMessage request = NCMessage.makeRoomListRequestMessage();
-		dos.writeUTF(((RoomListRequest)request).toEncodedString());
+		NCMessage request = NCMessage.makeOperationMessage(NCMessage.OP_ROOM_LIST_REQUEST);
+		dos.writeUTF(((NCOperationMessage)request).toEncodedString());
 		
 		NCMessage response = NCMessage.readMessageFromSocket(dis);
 		
-		return ((SendRoomList)response).getDescRoomList();
+		return ((NCInfoListMessage)response).getList();
 	}
 	
 	//Método para solicitar la entrada en una sala
 	public boolean enterRoom(String room) throws IOException {
 		//Funcionamiento resumido: SND(ENTER_ROOM<room>) and RCV(IN_ROOM) or RCV(REJECT)
 		//TODO completar el método
-		NCMessage request = NCMessage.makeRoomRequestMessage(room);
-		dos.writeUTF(((RoomRequest)request).toEncodedString());
+		NCMessage request = NCMessage.makeTextMessage(NCMessage.OP_ENTER_ROOM, room);
+		dos.writeUTF(((NCTextMessage)request).toEncodedString());
 		
 		NCMessage response = NCMessage.readMessageFromSocket(dis);
+		
 		//Analizamos el mensaje para saber si se puede acceder a la sala
-		if (response.getOpcode() == NCMessage.OP_SEND_ROOM_OK) {
+		if (response.getOpcode() == NCMessage.OP_ENTER_ROOM_OK) {
+			return true;
+		} else  {
+			return false;
+		}	
+	}
+	
+	//Método para renombrar la sala
+	public boolean roomRename(String room) throws IOException {
+		NCMessage request = NCMessage.makeTextMessage(NCMessage.OP_ROOM_RENAME_REQUEST, room);
+		dos.writeUTF(((NCTextMessage)request).toEncodedString());
+		
+		NCMessage response = NCMessage.readMessageFromSocket(dis);
+		
+		//Analizamos el mensaje para saber si se puede acceder a la sala
+		if (response.getOpcode() == NCMessage.OP_ROOM_RENAME_OK) {
 			return true;
 		} else  {
 			return false;
@@ -102,8 +118,8 @@ public class NCConnector {
 	public void leaveRoom(String room) throws IOException {
 		//Funcionamiento resumido: SND(EXIT_ROOM)
 		//TODO completar el método
-		NCMessage request = NCMessage.makeExitRoomMessage();
-		dos.writeUTF(((ExitRoom)request).toEncodedString());
+		NCMessage request = NCMessage.makeOperationMessage(NCMessage.OP_EXIT_ROOM);
+		dos.writeUTF(((NCOperationMessage)request).toEncodedString());
 	}
 	
 	//Método que utiliza el Shell para ver si hay datos en el flujo de entrada
@@ -111,8 +127,24 @@ public class NCConnector {
 		return (dis.available() != 0);
 	}
 	
-	//IMPORTANTE!!
+	
 	//TODO Es necesario implementar métodos para recibir y enviar mensajes de chat a una sala
+	public void sendMessage(String msg) throws IOException {
+		//Crea el mensaje con el texto pasado como parámetro y lo envía
+		NCMessage message = NCMessage.makeTextMessage(NCMessage.OP_TEXT_MESSAGE_OUT, msg);
+		dos.writeUTF(((NCTextMessage)message).toEncodedString());
+	}
+	
+	public void sendPrivateMessage(String nick, String msg) throws IOException {
+		//Crea el mensaje con el texto pasado como parámetro y lo envía
+		NCMessage message = NCMessage.makeNickMessage(NCMessage.OP_PRIVATE_TEXT_MESSAGE_OUT, nick, msg);
+		dos.writeUTF(((NCNickMessage)message).toEncodedString());
+	}
+	
+	public NCMessage receiveMessage() throws IOException {
+		NCMessage message = NCMessage.readMessageFromSocket(dis);
+		return message;
+	}
 	
 	//Método para pedir la descripción de una sala
 	public NCRoomDescription getRoomInfo(String room) throws IOException {
@@ -120,7 +152,14 @@ public class NCConnector {
 		//TODO Construimos el mensaje de solicitud de información de la sala específica
 		//TODO Recibimos el mensaje de respuesta
 		//TODO Devolvemos la descripción contenida en el mensaje
-		return null;
+		NCMessage request = NCMessage.makeOperationMessage(NCMessage.OP_ROOM_INFO_REQUEST);
+		dos.writeUTF(((NCOperationMessage)request).toEncodedString());
+		
+		
+		NCMessage response = NCMessage.readMessageFromSocket(dis);
+		NCRoomDescription roomDescription = new NCRoomDescription(((NCInfoMessage)response).getName(), ((NCInfoMessage)response).getMembers(), ((NCInfoMessage)response).getTimeLastMessage());
+		return roomDescription;
+		
 	}
 	
 	//Método para cerrar la comunicación con la sala
